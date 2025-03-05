@@ -20,6 +20,11 @@ class AcquiredCustomersByOrigin extends CircleChart
 
     public int $limit = 10;
 
+    public function showTitle(): bool
+    {
+        return true;
+    }
+
     public function getPlotOptions(): array
     {
         return [
@@ -52,8 +57,7 @@ class AcquiredCustomersByOrigin extends CircleChart
                 ->limit($this->limit)
                 ->join('contact_origins', 'contact_origins.id', '=', 'contacts.contact_origin_id')
                 ->where('contact_origins.is_active', true)
-                ->orderBy('contact_origins.name')
-
+                ->orderByRaw('COUNT(*) DESC')
         )
             ->setRange($this->timeFrame)
             ->setEndingDate($this->end)
@@ -61,9 +65,7 @@ class AcquiredCustomersByOrigin extends CircleChart
             ->setLabelKey('contactOrigin.name')
             ->count('contact_origin_id');
 
-
         $this->series = $metrics->getData();
         $this->labels = $metrics->getLabels();
     }
-
 }
